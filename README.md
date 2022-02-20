@@ -36,4 +36,12 @@ Topics covered:
 * Convolutions and Pooling
 * Advanced NN Functions
 
+## Task 0.5 - Visualization
 
+Parameters used:
+- `linear.weight_0_0`: 9.14
+- `linear.weight_1_0`: -0.27
+- `linear.bias_0`: -4.29
+
+Visualization
+![](/projects/imgs/task0_5_viz.png)
