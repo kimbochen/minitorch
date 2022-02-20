@@ -50,7 +50,6 @@ class Module:
 
         return named_param
 
-
     def parameters(self):
         "Enumerate over all the parameters of this module and its descendents."
         # TODO: Implement for Task 0.4.
