@@ -23,7 +23,15 @@ def central_difference(f, *vals, arg=0, epsilon=1e-6):
         float : An approximation of :math:`f'_i(x_0, \ldots, x_{n-1})`
     """
     # TODO: Implement for Task 1.1.
-    raise NotImplementedError('Need to implement for Task 1.1')
+    def diff_xs(dx):
+        for idx, val in enumerate(vals):
+            yield val + dx if idx == arg else val
+
+    x_pos = diff_xs(epsilon / 2.0)
+    x_neg = diff_xs(-epsilon / 2.0)
+
+    return (f(*x_pos) - f(*x_neg)) / epsilon
+
 
 
 # ## Task 1.2 and 1.4
