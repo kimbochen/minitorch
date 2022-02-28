@@ -274,7 +274,14 @@ class FunctionBase:
         # Tip: Note when implementing this function that
         # cls.backward may return either a value or a tuple.
         # TODO: Implement for Task 1.3.
-        raise NotImplementedError('Need to implement for Task 1.3')
+        derivs = cls.backward(ctx, d_output)
+        if not isinstance(derivs, tuple):
+            derivs = (derivs,)
+
+        pairs = [*zip(inputs, derivs)]
+        not_constant = lambda x: not is_constant(x[0])
+
+        return filter(not_constant, pairs)
 
 
 # Algorithms for backpropagation
