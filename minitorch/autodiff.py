@@ -245,7 +245,7 @@ class FunctionBase:
 
         # Call forward with the variables.
         c = cls.forward(ctx, *raw_vals)
-        assert isinstance(c, cls.data_type), "Expected return typ %s got %s" % (
+        assert isinstance(c, cls.data_type), "Expected return type %s got %s" % (
             cls.data_type,
             type(c),
         )
