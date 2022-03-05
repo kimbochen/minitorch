@@ -33,6 +33,7 @@ class Variable:
         else:
             self.name = self.unique_id
         self.used = 0
+        self.n_mark = 0
 
     def requires_grad_(self, val):
         """
@@ -106,6 +107,9 @@ class Variable:
     def zeros(self):
         return 0.0
 
+    def __hash__(self):
+        return hash(self.unique_id)
+
 
 # Some helper functions for handling optional tuples.
 
@@ -175,7 +179,7 @@ class History:
 
     """
 
-    def __init__(self, last_fn=None, ctx=None, inputs=None):
+    def __init__(self, last_fn=None, ctx=None, inputs=[]):
         self.last_fn = last_fn
         self.ctx = ctx
         self.inputs = inputs
@@ -191,7 +195,7 @@ class History:
             list of numbers : a derivative with respect to `inputs`
         """
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        raise NotImplementedError("Need to implement for Task 1.4")
 
 
 class FunctionBase:
@@ -275,20 +279,18 @@ class FunctionBase:
         # cls.backward may return either a value or a tuple.
         # TODO: Implement for Task 1.3.
         derivs = cls.backward(ctx, d_output)
-        if not isinstance(derivs, tuple):
-            derivs = (derivs,)
+        pairs = [*zip(inputs, wrap_tuple(derivs))]
+        var_derivs = filter(lambda x: is_fn_output(x[0]), pairs)
 
-        pairs = [*zip(inputs, derivs)]
-        not_constant = lambda x: not is_constant(x[0])
-
-        return filter(not_constant, pairs)
+        return list(var_derivs)
 
 
 # Algorithms for backpropagation
 
 
-def is_constant(val):
-    return not isinstance(val, Variable) or val.history is None
+def is_fn_output(val):
+    """Altered from function `is_constant`."""
+    return isinstance(val, Variable) and val.history is not None
 
 
 def topological_sort(variable):
@@ -303,7 +305,25 @@ def topological_sort(variable):
                             starting from the right.
     """
     # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    """
+    Kahn's algorithm: https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm
+    """
+
+    leaf_nodes = {variable}
+    sorted_list = []
+
+    while len(leaf_nodes) != 0:
+        node = leaf_nodes.pop()
+        sorted_list.append(node)
+
+        for p_node in node.history.inputs:
+            p_node.n_mark += 1
+            if p_node.n_mark == p_node.used:
+                leaf_nodes.add(p_node)
+
+    var_nodes = filter(is_fn_output, sorted_list)
+
+    return list(var_nodes)
 
 
 def backpropagate(variable, deriv):
@@ -320,4 +340,4 @@ def backpropagate(variable, deriv):
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
     # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    raise NotImplementedError("Need to implement for Task 1.4")

@@ -99,6 +99,28 @@ def test_chain_rule4():
 
 
 @pytest.mark.task1_4
+def test_topological_sort():
+    x = minitorch.Scalar(2.0)
+    y = minitorch.Scalar(3.0)
+
+    z = minitorch.scalar.Mul.apply(x, y)
+    l = minitorch.scalar.Log.apply(z)
+    e = minitorch.scalar.Exp.apply(z)
+    h = minitorch.scalar.Add.apply(l, e)
+
+    z_val = 6.0
+    l_val = minitorch.operators.log(z_val)
+    e_val = minitorch.operators.exp(z_val)
+    h_val = minitorch.operators.add(l_val, e_val)
+
+    nodes = minitorch.autodiff.topological_sort(h)
+
+    assert nodes[0].data == h_val
+    assert {nodes[1].data, nodes[2].data} == {e_val, l_val}
+    assert nodes[3].data == z_val
+
+
+@pytest.mark.task1_4
 def test_backprop1():
     # Example 1: F1(0, v)
     var = minitorch.Scalar(0)
