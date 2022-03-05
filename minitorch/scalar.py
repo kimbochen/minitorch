@@ -33,7 +33,6 @@ def central_difference(f, *vals, arg=0, epsilon=1e-6):
     return (f(*x_pos) - f(*x_neg)) / epsilon
 
 
-
 # ## Task 1.2 and 1.4
 # Scalar Forward and Backward
 
