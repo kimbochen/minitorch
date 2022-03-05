@@ -33,7 +33,6 @@ def central_difference(f, *vals, arg=0, epsilon=1e-6):
     return (f(*x_pos) - f(*x_neg)) / epsilon
 
 
-
 # ## Task 1.2 and 1.4
 # Scalar Forward and Backward
 
@@ -49,6 +48,8 @@ class Scalar(Variable):
     Attributes:
         data (float): The wrapped scalar value.
     """
+
+    __hash__ = Variable.__hash__
 
     def __init__(self, v, back=History(), name=None):
         super().__init__(back, name=name)
@@ -199,12 +200,16 @@ class Mul(ScalarFunction):
     @staticmethod
     def forward(ctx, a, b):
         # TODO: Implement for Task 1.2.
+        ctx.save_for_backward(a, b)
         return operators.mul(a, b)
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        a, b = ctx.saved_values
+        a_back = operators.mul(b, d_output)
+        b_back = operators.mul(a, d_output)
+        return a_back, b_back
 
 
 class Inv(ScalarFunction):
@@ -213,12 +218,14 @@ class Inv(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         # TODO: Implement for Task 1.2.
+        ctx.save_for_backward(a)
         return operators.inv(a)
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        a = ctx.saved_values
+        return operators.mul(operators.log(a), d_output)
 
 
 class Neg(ScalarFunction):
@@ -232,7 +239,7 @@ class Neg(ScalarFunction):
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        return operators.neg(d_output)
 
 
 class Sigmoid(ScalarFunction):
@@ -241,12 +248,17 @@ class Sigmoid(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         # TODO: Implement for Task 1.2.
-        return operators.sigmoid(a)
+        actvn = operators.sigmoid(a)
+        ctx.save_for_backward(actvn)
+        return actvn
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        s = ctx.saved_values
+        one_minus_s = operators.add(1.0, operators.neg(s))
+        sigmoid_back = operators.mul(s, one_minus_s)
+        return operators.mul(sigmoid_back, d_output)
 
 
 class ReLU(ScalarFunction):
@@ -255,12 +267,14 @@ class ReLU(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         # TODO: Implement for Task 1.2.
+        ctx.save_for_backward(a)
         return operators.relu(a)
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        a = ctx.saved_values
+        return operators.relu_back(a, d_output)
 
 
 class Exp(ScalarFunction):
@@ -269,12 +283,14 @@ class Exp(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         # TODO: Implement for Task 1.2.
-        return operators.exp(a)
+        exp_a = operators.exp(a)
+        ctx.save_for_backward(exp_a)
+        return exp_a
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        return operators.mul(ctx.saved_values, d_output)
 
 
 class LT(ScalarFunction):
@@ -288,7 +304,7 @@ class LT(ScalarFunction):
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        return 0.0
 
 
 class EQ(ScalarFunction):
@@ -302,7 +318,7 @@ class EQ(ScalarFunction):
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        return 0.0
 
 
 def derivative_check(f, *scalars):

@@ -22,7 +22,7 @@ class Function1(minitorch.ScalarFunction):
 class Function2(minitorch.ScalarFunction):
     @staticmethod
     def forward(ctx, x, y):
-        ":math:`f(x, y) = x \timex y + x`"
+        ":math:`f(x, y) = x \times y + x`"
         ctx.save_for_backward(x, y)
         return x * y + x
 
@@ -46,7 +46,7 @@ def test_chain_rule1():
 
 @pytest.mark.task1_3
 def test_chain_rule2():
-    "Check that constrants are ignored and variables get derivatives."
+    "Check that constants are ignored and variables get derivatives."
     var = minitorch.Variable(History())
     constant = minitorch.Variable(None)
     back = Function1.chain_rule(ctx=None, inputs=[var, constant], d_output=5)
@@ -59,7 +59,7 @@ def test_chain_rule2():
 
 @pytest.mark.task1_3
 def test_chain_rule3():
-    "Check that constrants are ignored and variables get derivatives."
+    "Check that constants are ignored and variables get derivatives."
     constant = 10
     var = minitorch.Scalar(5)
 
@@ -96,6 +96,28 @@ def test_chain_rule4():
 # ## Task 1.4 - Run some simple backprop tests
 
 # Main tests are in test_scalar.py
+
+
+@pytest.mark.task1_4
+def test_topological_sort():
+    x = minitorch.Scalar(2.0)
+    y = minitorch.Scalar(3.0)
+
+    z = minitorch.scalar.Mul.apply(x, y)
+    l = minitorch.scalar.Log.apply(z)
+    e = minitorch.scalar.Exp.apply(z)
+    h = minitorch.scalar.Add.apply(l, e)
+
+    z_val = 6.0
+    l_val = minitorch.operators.log(z_val)
+    e_val = minitorch.operators.exp(z_val)
+    h_val = minitorch.operators.add(l_val, e_val)
+
+    nodes = minitorch.autodiff.topological_sort(h)
+
+    assert nodes[0].data == h_val
+    assert {nodes[1].data, nodes[2].data} == {e_val, l_val}
+    assert nodes[3].data == z_val
 
 
 @pytest.mark.task1_4
