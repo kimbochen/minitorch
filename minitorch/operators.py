@@ -118,7 +118,7 @@ def log_back(x, d):
     if x == 0:
         raise ValueError('Log function does not accept 0 as input')
     else:
-        return d / (x + EPS)
+        return d / x
 
 
 def inv(x):
@@ -127,7 +127,7 @@ def inv(x):
     if x == 0:
         raise ZeroDivisionError
     else:
-        return 1.0 / (x + EPS)
+        return 1.0 / x
 
 
 def inv_back(x, d):
@@ -136,7 +136,7 @@ def inv_back(x, d):
     if x == 0:
         raise ZeroDivisionError
     else:
-        return -d / ((x + EPS) ** 2)
+        return -d / (x ** 2.0)
 
 
 def relu_back(x, d):
