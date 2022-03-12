@@ -121,6 +121,28 @@ def test_topological_sort():
 
 
 @pytest.mark.task1_4
+def test_backprop_step1():
+    x = minitorch.Scalar(2.0)
+    y = minitorch.Scalar(3.0)
+    z = minitorch.scalar.Mul.apply(x, y)
+
+    dz_dx, dz_dy = z.history.backprop_step(1.0)
+    assert dz_dx[1] == 3.0
+    assert dz_dy[1] == 2.0
+
+
+def test_backprop_step2():
+    x = minitorch.Scalar(2.0)
+    c = 3.0
+    z = minitorch.scalar.Mul.apply(x, c)
+
+    derivs = z.history.backprop_step(1.0)
+    dz_dx = derivs[0]
+    assert len(derivs) == 1
+    assert dz_dx[1] == 3.0
+
+
+@pytest.mark.task1_4
 def test_backprop1():
     # Example 1: F1(0, v)
     var = minitorch.Scalar(0)
