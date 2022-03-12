@@ -55,7 +55,7 @@ def max(x, y):
 def is_close(x, y):
     ":math:`f(x) = |x - y| < 1e-2` "
     # TODO: Implement for Task 0.1.
-    return (abs(x - y) < 1e-2)
+    return abs(x - y) < 1e-2
 
 
 def sigmoid(x):
@@ -116,7 +116,7 @@ def log_back(x, d):
     r"If :math:`f = log` as above, compute :math:`d \times f'(x)`"
     # TODO: Implement for Task 0.1.
     if x == 0:
-        raise ValueError('Log function does not accept 0 as input')
+        raise ValueError("Log function does not accept 0 as input")
     else:
         return d / x
 
@@ -200,6 +200,7 @@ def zipWith(fn):
     def map_fn(ls1, ls2):
         assert len(ls1) == len(ls2)
         return [fn(x1, x2) for x1, x2 in zip(ls1, ls2)]
+
     return map_fn
 
 

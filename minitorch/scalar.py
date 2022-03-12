@@ -24,8 +24,8 @@ def central_difference(f, *vals, arg=0, epsilon=1e-6):
     """
     # TODO: Implement for Task 1.1.
     def delta_x(dx):
-      for idx, val in enumerate(vals):
-          yield val + dx if idx == arg else val
+        for idx, val in enumerate(vals):
+            yield val + dx if idx == arg else val
 
     x_pos = delta_x(epsilon / 2.0)
     x_neg = delta_x(-epsilon / 2.0)
