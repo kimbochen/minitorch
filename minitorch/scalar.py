@@ -70,8 +70,6 @@ class Scalar(Variable):
 
     def __add__(self, b):
         # TODO: Implement for Task 1.2.
-        if not isinstance(b, Scalar):
-            b = Scalar(b)
         return Add.apply(self, b)
 
     def __bool__(self):
@@ -91,9 +89,7 @@ class Scalar(Variable):
 
     def __sub__(self, b):
         # TODO: Implement for Task 1.2.
-        if not isinstance(b, Scalar):
-            b = Scalar(b)
-        return Add.apply(self, Neg.apply(b))
+        return Add.apply(self, ops.neg(b))
 
     def __neg__(self):
         # TODO: Implement for Task 1.2.

@@ -2,11 +2,11 @@
 
 <img src="http://minitorch.github.io/_images/minitorch.svg">
 
-This repo is the full student code for minitorch. It is designed as a 
-single repo that can be completed part by part following the guide book. 
-It uses GitHub CI to run the tests for each module. 
+This repo is the full student code for minitorch. It is designed as a
+single repo that can be completed part by part following the guide book.
+It uses GitHub CI to run the tests for each module.
 
-* [Full Guide](http://minitorch.github.io) 
+* [Full Guide](http://minitorch.github.io)
 
 MiniTorch is a *diy teaching library*
 for machine learning engineers who wish to learn about the internal
@@ -36,7 +36,7 @@ Topics covered:
 * Convolutions and Pooling
 * Advanced NN Functions
 
-## Task 0.5 - Visualization
+## Task 0.5 Visualization
 
 ### Parameters used
 
@@ -48,3 +48,15 @@ Topics covered:
 
 ### Visualization
 ![](project/imgs/task0_5_viz.png)
+
+
+## Task 1.5 Visualization
+
+### Neural Net Flow Graph
+![](project/imgs/task1_5_nn_graph.png)
+
+### Data and Decision Boundary
+![](project/imgs/task1_5_data_viz.png)
+
+### Loss Graph
+![](project/imgs/task1_5_loss_graph.png)

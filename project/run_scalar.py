@@ -22,6 +22,18 @@ class Network(minitorch.Module):
         return self.layer3.forward(end)[0].sigmoid()
 
 
+class DebugNetwork(minitorch.Module):
+    def __init__(self, hidden_layers):
+        super().__init__()
+        self.weight = self.add_parameter(
+            "weight", minitorch.Scalar(2 * (random.random() - 0.5))
+        )
+
+    def forward(self, x):
+        z = self.weight.value + x[0]
+        return z.sigmoid()
+
+
 class Linear(minitorch.Module):
     def __init__(self, in_size, out_size):
         super().__init__()
@@ -108,8 +120,11 @@ class ScalarTrain:
 
 
 if __name__ == "__main__":
+    random.seed(3985)
+
     PTS = 50
+    DATASET = minitorch.datasets["Simple"](PTS)
     HIDDEN = 2
     RATE = 0.5
-    data = minitorch.datasets["Simple"](PTS)
-    ScalarTrain(HIDDEN).train(data, RATE)
+
+    ScalarTrain(HIDDEN).train(DATASET, RATE)

@@ -128,6 +128,15 @@ def unwrap_tuple(x):
     return x
 
 
+def is_constant(val):
+    return not isinstance(val, Variable) or val.history is None
+
+
+def is_fn_output(val):
+    """Altered from function `is_constant`."""
+    return isinstance(val, Variable) and val.history is not None
+
+
 # Classes for Functions.
 
 
@@ -286,11 +295,6 @@ class FunctionBase:
 
 
 # Algorithms for backpropagation
-
-
-def is_fn_output(val):
-    """Altered from function `is_constant`."""
-    return isinstance(val, Variable) and val.history is not None
 
 
 def topological_sort(variable):
