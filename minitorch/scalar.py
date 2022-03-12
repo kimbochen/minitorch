@@ -1,5 +1,5 @@
 from .autodiff import FunctionBase, Variable, History
-from . import operators
+from . import operators as ops
 import numpy as np
 
 
@@ -23,14 +23,15 @@ def central_difference(f, *vals, arg=0, epsilon=1e-6):
         float : An approximation of :math:`f'_i(x_0, \ldots, x_{n-1})`
     """
     # TODO: Implement for Task 1.1.
-    def diff_xs(dx):
+    def delta_x(dx):
         for idx, val in enumerate(vals):
             yield val + dx if idx == arg else val
 
-    x_pos = diff_xs(epsilon / 2.0)
-    x_neg = diff_xs(-epsilon / 2.0)
+    x_pos = delta_x(epsilon / 2.0)
+    x_neg = delta_x(-epsilon / 2.0)
+    cd = (f(*x_pos) - f(*x_neg)) / epsilon
 
-    return (f(*x_pos) - f(*x_neg)) / epsilon
+    return cd
 
 
 # ## Task 1.2 and 1.4
@@ -173,7 +174,7 @@ class Add(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a, b):
-        return operators.add(a, b)
+        return ops.add(a, b)
 
     @staticmethod
     def backward(ctx, d_output):
@@ -186,12 +187,12 @@ class Log(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         ctx.save_for_backward(a)
-        return operators.log(a)
+        return ops.log(a)
 
     @staticmethod
     def backward(ctx, d_output):
         a = ctx.saved_values
-        return operators.log_back(a, d_output)
+        return ops.log_back(a, d_output)
 
 
 class Mul(ScalarFunction):
@@ -201,14 +202,14 @@ class Mul(ScalarFunction):
     def forward(ctx, a, b):
         # TODO: Implement for Task 1.2.
         ctx.save_for_backward(a, b)
-        return operators.mul(a, b)
+        return ops.mul(a, b)
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
         a, b = ctx.saved_values
-        a_back = operators.mul(b, d_output)
-        b_back = operators.mul(a, d_output)
+        a_back = ops.mul(b, d_output)
+        b_back = ops.mul(a, d_output)
         return a_back, b_back
 
 
@@ -219,13 +220,13 @@ class Inv(ScalarFunction):
     def forward(ctx, a):
         # TODO: Implement for Task 1.2.
         ctx.save_for_backward(a)
-        return operators.inv(a)
+        return ops.inv(a)
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
         a = ctx.saved_values
-        return operators.mul(operators.log(a), d_output)
+        return ops.inv_back(a, d_output)
 
 
 class Neg(ScalarFunction):
@@ -234,12 +235,12 @@ class Neg(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         # TODO: Implement for Task 1.2.
-        return operators.neg(a)
+        return ops.neg(a)
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        return operators.neg(d_output)
+        return ops.neg(d_output)
 
 
 class Sigmoid(ScalarFunction):
@@ -248,7 +249,7 @@ class Sigmoid(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         # TODO: Implement for Task 1.2.
-        actvn = operators.sigmoid(a)
+        actvn = ops.sigmoid(a)
         ctx.save_for_backward(actvn)
         return actvn
 
@@ -256,9 +257,9 @@ class Sigmoid(ScalarFunction):
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
         s = ctx.saved_values
-        one_minus_s = operators.add(1.0, operators.neg(s))
-        sigmoid_back = operators.mul(s, one_minus_s)
-        return operators.mul(sigmoid_back, d_output)
+        one_minus_s = ops.add(1.0, ops.neg(s))
+        sigmoid_back = ops.mul(s, one_minus_s)
+        return ops.mul(sigmoid_back, d_output)
 
 
 class ReLU(ScalarFunction):
@@ -268,13 +269,13 @@ class ReLU(ScalarFunction):
     def forward(ctx, a):
         # TODO: Implement for Task 1.2.
         ctx.save_for_backward(a)
-        return operators.relu(a)
+        return ops.relu(a)
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
         a = ctx.saved_values
-        return operators.relu_back(a, d_output)
+        return ops.relu_back(a, d_output)
 
 
 class Exp(ScalarFunction):
@@ -283,14 +284,14 @@ class Exp(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         # TODO: Implement for Task 1.2.
-        exp_a = operators.exp(a)
+        exp_a = ops.exp(a)
         ctx.save_for_backward(exp_a)
         return exp_a
 
     @staticmethod
     def backward(ctx, d_output):
         # TODO: Implement for Task 1.4.
-        return operators.mul(ctx.saved_values, d_output)
+        return ops.mul(ctx.saved_values, d_output)
 
 
 class LT(ScalarFunction):
@@ -299,7 +300,7 @@ class LT(ScalarFunction):
     @staticmethod
     def forward(ctx, a, b):
         # TODO: Implement for Task 1.2.
-        return operators.lt(a, b)
+        return ops.lt(a, b)
 
     @staticmethod
     def backward(ctx, d_output):
@@ -313,7 +314,7 @@ class EQ(ScalarFunction):
     @staticmethod
     def forward(ctx, a, b):
         # TODO: Implement for Task 1.2.
-        return operators.eq(a, b)
+        return ops.eq(a, b)
 
     @staticmethod
     def backward(ctx, d_output):

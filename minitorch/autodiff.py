@@ -195,7 +195,7 @@ class History:
             list of numbers : a derivative with respect to `inputs`
         """
         # TODO: Implement for Task 1.4.
-        raise NotImplementedError("Need to implement for Task 1.4")
+        return self.last_fn.chain_rule(self.ctx, self.inputs, d_output)
 
 
 class FunctionBase:
@@ -317,13 +317,12 @@ def topological_sort(variable):
         sorted_list.append(node)
 
         for p_node in node.history.inputs:
-            p_node.n_mark += 1
-            if p_node.n_mark == p_node.used:
-                leaf_nodes.add(p_node)
+            if is_fn_output(p_node):
+                p_node.n_mark += 1
+                if p_node.n_mark == p_node.used:
+                    leaf_nodes.add(p_node)
 
-    var_nodes = filter(is_fn_output, sorted_list)
-
-    return list(var_nodes)
+    return sorted_list
 
 
 def backpropagate(variable, deriv):
@@ -340,4 +339,15 @@ def backpropagate(variable, deriv):
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
     # TODO: Implement for Task 1.4.
-    raise NotImplementedError("Need to implement for Task 1.4")
+    nodes = topological_sort(variable)
+    node2deriv = {node: 0.0 for node in nodes}
+    node2deriv[variable] = deriv
+
+    for node in nodes:
+        d_output = node2deriv[node]
+        if not node.is_leaf():
+            var_derivs = node.history.backprop_step(d_output)
+            for var, deriv in var_derivs:
+                node2deriv[var] += deriv
+        else:
+            node.accumulate_derivative(d_output)
